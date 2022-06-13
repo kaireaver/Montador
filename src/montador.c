@@ -3,52 +3,42 @@
 
 // TODO: implementação do montador
 int retorna_instrucao(char str[]) { //Retorna o códido das instruções
-    if (strcmp(str, "HALT") == 0){
-        return 0;
-    } else if (strcmp(str, "LOAD") == 0) {
+    if (strcmp(str, "LOAD") == 0) {
         return 1;
     } else if (strcmp(str, "STORE") == 0) {
         return 2;
-    } else if (strcmp(str, "READ") == 0) {
-        return 3;
-    } else if (strcmp(str, "WRITE") == 0) {
-        return 4;
-    } else if (strcmp(str, "COPY") == 0) {
-        return 5;
-    } else if (strcmp(str, "PUSH") == 0) {
-        return 6;
-    } else if (strcmp(str, "POP") == 0) {
-        return 7;
     } else if (strcmp(str, "ADD") == 0) {
-        return 8;
+        return 3;
     } else if (strcmp(str, "SUB") == 0) {
+        return 4;
+    } else if (strcmp(str, "JMP") == 0) {
+        return 5;
+    } else if (strcmp(str, "JPG") == 0) {
+        return 6;
+    } else if (strcmp(str, "JPL") == 0) {
+        return 7;
+    } else if (strcmp(str, "JPE") == 0) {
+        return 8;
+    } else if (strcmp(str, "JPNE") == 0) {
         return 9;
-    } else if (strcmp(str, "MUL") == 0) {
+    } else if (strcmp(str, "PUSH") == 0) {
         return 10;
-    } else if (strcmp(str, "DIV") == 0) {
+    } else if (strcmp(str, "POP") == 0) {
         return 11;
-    } else if (strcmp(str, "MOD") == 0) {
+    } else if (strcmp(str, "READ") == 0) {
         return 12;
-    } else if (strcmp(str, "AND") == 0) {
+    } else if (strcmp(str, "WRITE") == 0) {
         return 13;
-    } else if (strcmp(str, "OR") == 0) {
-        return 14;
-    } else if (strcmp(str, "NOT") == 0) {
-        return 15;
-    } else if (strcmp(str, "JUMP") == 0) {
-        return 16;
-    } else if (strcmp(str, "JZ") == 0) {
-        return 17;
-    } else if (strcmp(str, "JN") == 0) {
-        return 18;
     } else if (strcmp(str, "CALL") == 0) {
-        return 19;
+        return 14;
     } else if (strcmp(str, "RET") == 0) {
-        return 20;
+        return 15;
+    } else if (strcmp(str, "HALT") == 0) {
+        return 16;
     } else if (strcmp(str, "WORD") == 0) {
-        return 21;
+        return 17;
     } else if (strcmp(str, "END") == 0) {
-        return 22;
+        return 18;
     } else {
         return -1;
     }
@@ -168,8 +158,8 @@ SymTable * pass_one(FILE *arq, SymTable *head){
             }
             num_inst++;
             int i = retorna_instrucao(word);
-            //Se leu instrução JUMP, JZ, JN ou CALL (aumenta prog_size em 2)
-            if (i == 16 || i == 17 || i == 18 || i == 19){
+            //Se leu instrução JMP, JPG, JPL, JPE, JPNE, ou CALL (aumenta prog_size em 2)
+            if (i == 5 || i == 6 || i == 7 || i == 8 || i == 9 || i == 14){
                 word = strtok(NULL, " ");
                 prog_size += 2;
                 head = add_symbol(word, head);
@@ -181,24 +171,24 @@ SymTable * pass_one(FILE *arq, SymTable *head){
                 prog_size += 3;
                 head = add_symbol(word, head);
             }
-            // READ, WRITE, PUSH, POP, NOT (aumenta prog_size em 2)
-            else if (i == 3 || i == 4 || i == 6 || i == 7 || i == 15){
+            // READ, WRITE, PUSH, POP (aumenta prog_size em 2)
+            else if (i == 10 || i == 11 || i == 12 || i == 13){
                 prog_size += 2;
             }
-            // COPY, ADD, SUB, MUL, DIV, MOD, AND, OR (aumenta prog_size em 3)
-            else if (i == 5 || (i >= 8 && i <= 14)){
+            // COPY, ADD ou SUB (aumenta prog_size em 3)
+            else if (i == 3 || i == 4){
                 prog_size += 3;
             }
             // HALT, RET ou WORD (aumenta prog_size em 1)
-            else if (i == 0 || i == 20 || i == 21){
+            else if (i == 15 || i == 16 || i == 17){
                 prog_size ++;
-                if (i == 21 && num_inst == 1){
+                if (i == 17 && num_inst == 1){
                     num_word++;
                     num_inst = 0;
                 }
             }
             // Se é END, sai do loop
-            else if (i == 22){
+            else if (i == 18){
                 break;
             }
         }
@@ -228,38 +218,38 @@ void pass_two(FILE *arq, SymTable *head) {
                     } else { //Instruções
                         address_or_code = retorna_instrucao(word);
 
-                        if ((address_or_code >= 1) && (address_or_code <= 15)) { //Instruções com pelo menos um registrador
+                        if (((address_or_code >= 1) && (address_or_code <= 4)) || ((address_or_code >= 10) && (address_or_code <= 13))) { //Instruções com pelo menos um registrador
                             printf("%d ", address_or_code);
                             word = strtok(NULL, " "); //Próxima palavra
                             mem_addr += 2;
                             printf("%d ", retorna_registrador(word));
 
-                            if ((address_or_code == 5) || ((address_or_code >= 8) && (address_or_code <= 14))) { //Intruções com dois registradores
+                            if ((address_or_code == 3) || (address_or_code == 4)) { //Intruções com dois registradores
                                 word = strtok(NULL, " "); //Próxima palavra
                                 mem_addr++;
                                 printf("%d ", retorna_registrador(word));
-                            } else if ((address_or_code == 1) || (address_or_code == 2)) { //Instruções com resgistrador e memória
+                            } else if ((address_or_code == 1) || (address_or_code == 2)) { //Instruções com registrador e memória
                                 word = strtok(NULL, " "); //Próxima palavra
                                 mem_addr++;
                                 printf("%d ", get_address(word, head) - mem_addr);
                             }
 
-                        } else if ((address_or_code >= 16) && (address_or_code <= 19)) { //Instruções só com memória
+                        } else if (((address_or_code >= 5) && (address_or_code <= 9)) || (address_or_code == 14)) { //Instruções só com memória
                             printf("%d ", address_or_code);
                             word = strtok(NULL, " "); //Próxima palavra
                             mem_addr += 2;
                             printf("%d ", get_address(word, head) - mem_addr);
 
-                        } else if (address_or_code == 21) { //Word
+                        } else if (address_or_code == 17) { //Word
                             word = strtok(NULL, " "); //Próxima palavra
                             printf("%s ", word);
                             mem_addr++;
                             
-                        } else if ((address_or_code == 22) || (address_or_code == -1)){ //End ou inválido
+                        } else if ((address_or_code == 18) || (address_or_code == -1)){ //End ou inválido
                             printf("\b"); //Apaga espaço extra
                             return;
 
-                        } else if (address_or_code == 0 || address_or_code == 20){ // HALT ou RET
+                        } else if (address_or_code == 15 || address_or_code == 16){ // HALT ou RET
                             printf("%d ", address_or_code);
                             mem_addr++;
                         }
