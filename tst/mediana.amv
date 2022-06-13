@@ -1,0 +1,110 @@
+;;;;;;;;;;;;;;;;; Mediana ;;;;;;;;;;;;;;;;;;;;
+;Entrada: n1 n2 n3 n4 n5
+;Saída: Mediana dos números recebidos
+
+READ R0 ;R0 é n1
+READ R1 ;R1 é n2
+COPY R2 R1
+SUB R2 R0 ; R2 = n2 - n1 ; menor que 0 se n1 maior
+JN n1_maior_n2
+STORE R0 m1 ;menor (n1) no primeiro lugar da fila
+STORE R1 m2 ;maior (n2) no segundo
+JUMP ler_n3 ;lê 3o número
+
+n1_maior_n2: STORE R1 m1 ;menor (n2) no primeiro lugar da fila
+STORE R0 m2 ;maior (n1) no segundo
+
+ler_n3: READ R0 ;R0 é n3
+LOAD R1 m2 ;R1 é n2 (atualizado para maior da fila)
+COPY R2 R0
+SUB R2 R1 ;R2 = n3 - n2; menor que 0 se n2 maior
+JN n2_maior_n3
+STORE R0 m3 ;n3 é o maior, topo da fila
+JUMP ler_n4 ;lê o 4o número
+
+n2_maior_n3: STORE R1 m3 ;n2 é maior, topo da fila
+LOAD R1 m1 ;R1 é n1
+COPY R2 R0 
+SUB R2 R1 ;R2 = n3 - n1; menor que 0 se n1 maior
+JN n1_maior_n3
+STORE R0 m2 ;n3 segundo maior
+JUMP ler_n4 ;lê o 4o número
+
+n1_maior_n3: STORE R1 m2 ;sobe n1 na fila
+STORE R0 m1 ;n3 menor de todos
+
+ler_n4: READ R0 ;R0 é n4
+LOAD R1 m3 ;R1 é n3
+COPY R2 R0
+SUB R2 R1 ;R2 = n4 - n3; menor que 0 se n3 for maior
+JN n3_maior_n4
+STORE R0 m4 ;n4 é o maior, topo da fila
+JUMP ler_n5 ;lê o 5o número
+
+n3_maior_n4: STORE R1 m4 ;sobe n3 na fila
+LOAD R1 m2 ;R1 é n2
+COPY R2 R0
+SUB R2 R1 ;R2 = n4 - n2; menor que 0 se n2 for maior
+JN n2_maior_n4
+STORE R0 m3 ;n4 segundo maior
+JUMP ler_n5 ;lê o 5o número
+
+n2_maior_n4: STORE R1 m3 ;sobe n2 na fila
+LOAD R1 m1 ;R1 é n1
+COPY R2 R0
+SUB R2 R1 ;R2 = n4 - n1; menor que 0 se n1 for maior
+JN n1_maior_n4
+STORE R0 m2 ;n4 terceiro maior
+JUMP ler_n5 ;lê o 5o número
+
+n1_maior_n4: STORE R1 m2 ;sobe n1 na fila
+STORE R0 m1 ;n4 menor de todos
+
+ler_n5: READ R0 ;R0 é n5
+LOAD R1 m4 ;R1 é n4
+COPY R2 R0
+SUB R2 R1 ;R2 = n5 - n4; menor que 0 se n4 for maior
+JN n4_maior_n5
+STORE R0 m5 ;n5 é o maior, topo da fila
+JUMP fim ;vai para o fim
+
+n4_maior_n5: STORE R1 m5 ;sobe n4 na fila
+LOAD R1 m3 ;R1 é n3
+COPY R2 R0
+SUB R2 R1 ;R2 = n5 - n3; menor que 0 se n3 for maior
+JN n3_maior_n5
+STORE R0 m4 ;n5 segundo maior
+JUMP fim ;vai para o fim
+
+n3_maior_n5: STORE R1 m4 ;sobe n3 na fila
+LOAD R1 m2 ;R1 é n2
+COPY R2 R0
+SUB R2 R1 ;R2 = n5 - n2; menor que 0 se n2 for maior
+JN n2_maior_n5
+STORE R0 m3 ;n5 terceiro maior
+JUMP fim ;vai para o fim
+
+n2_maior_n5: STORE R1 m3 ;sobe n2 na fila
+LOAD R1 m1 ;R1 é n1
+COPY R2 R0
+SUB R2 R1 ;R2 = n5 - n1; menor que 0 se n1 for maior
+JN n1_maior_n5
+STORE R0 m2 ;n5 quarto maior
+JUMP fim ;vai para o fim
+
+n1_maior_n5: STORE R1 m2 ;sobe n1 na fila
+STORE R0 m1 ;n5 menor de todos
+
+;;;;;;;; Output da mediana ;;;;;;;;;;;
+fim: LOAD R0 m3 ;Do meio é mediana
+WRITE R0
+HALT
+
+;;;;;;;;; Declaração de constantes para memória ;;;;;;;;;
+m1: WORD 200
+m2: WORD 201
+m3: WORD 202
+m4: WORD 203
+m5: WORD 204
+
+END
