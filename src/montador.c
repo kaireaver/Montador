@@ -1,8 +1,7 @@
 #include "montador.h"
 #include <string.h>
 
-// TODO: implementação do montador
-int retorna_instrucao(char str[]) { //Retorna o códido das instruções
+int retorna_instrucao(char str[]) { //Retorna o opcode da instrução fornecida
     if (strcmp(str, "LOAD") == 0) {
         return 1;
     } else if (strcmp(str, "STORE") == 0) {
@@ -44,11 +43,6 @@ int retorna_instrucao(char str[]) { //Retorna o códido das instruções
     }
 }
 
-int retorna_registrador(char str[]) { //Retorna o código dos registradores de propósito geral
-    return str[1] - '0';
-}
-
-
 // FUNÇÕES CONSTRUTORAS DA TABELA
 // Retorna endereço inteiro de um dado símbolo
 int get_address(char *symbol, SymTable *head){
@@ -66,7 +60,7 @@ int get_address(char *symbol, SymTable *head){
     return addr;
 }
 
-// Retorna 1 se tem o símbolo e 0 caso contrário
+// Retorna 1 se tem o símbolo e 0 caso contrário.
 int has_symbol(char symbol[], SymTable *head){
     SymTable *aux = head;
     while (aux != NULL){
@@ -76,7 +70,7 @@ int has_symbol(char symbol[], SymTable *head){
     return 0;
 }
 
-// Adiciona símbolo se ele não estiver na tabela
+// Adiciona símbolo se ele não estiver na tabela.
 SymTable * add_symbol(char symbol[], SymTable *head){
     if(has_symbol(symbol, head) == 0){
         SymTable *aux = head;
@@ -124,18 +118,7 @@ SymTable * add_address(char symbol[], int addr, SymTable *head){
     return head;
 }
 
-void print_table(SymTable *head){
-    SymTable *aux = head;
-    printf("Símbolo \t Endereço\n");
-    while (aux != NULL){
-        printf("%s \t %d\n", aux->symbol, aux->mem_addr);
-        aux = aux->next;
-    }
-}
-
-
-// FUNÇÕES DO MONTADOR
-// Passo 1 - Constrói tabela.
+// Passo 1 - Construção da tabela.
 SymTable * pass_one(FILE *arq, SymTable *head){
     char line[100];
     char *word;
@@ -187,25 +170,25 @@ void pass_two(FILE *arq, SymTable *head) {
         line[strcspn(line, "\r\n")] = 0;
         word = strtok(line, " ");
         while (word != NULL){
-            if (strncmp(word, ";", 1) == 0) { //Se começo de comentário
-                break; //Ignora o resto da linha
+            if (strncmp(word, ";", 1) == 0) { //Ignora linha se é um comentário
+                break;
             } else if (strncmp(word, "\n", 1) != 0) {
                 size = strlen(word);
                 if (strncmp(&word[size-1], ":", 1) != 0) { //Ignora declaração de labels
-                    if (has_symbol(word, head) == 1) { //Label referenciado
+                    if (has_symbol(word, head) == 1) { //Referência a um label
                     } else { //Instruções
                         address_or_code = retorna_instrucao(word);
-                        if (((address_or_code >= 1) && (address_or_code <= 14))) { //Instruções só com memória
+                        if (((address_or_code >= 1) && (address_or_code <= 14))) { // Instruções com registador, exceto WORD e END
                             printf("%d ", address_or_code);
                             word = strtok(NULL, " "); //Próxima palavra
                             mem_addr += 2;
                             printf("%d ", get_address(word, head) - mem_addr);
-                        } else if (address_or_code == 17) { //Word
+                        } else if (address_or_code == 17) { //WORD
                             word = strtok(NULL, " "); //Próxima palavra
                             printf("%s ", word);
                             mem_addr++;
 
-                        } else if ((address_or_code == 18) || (address_or_code == -1)){ //End ou inválido
+                        } else if ((address_or_code == 18) || (address_or_code == -1)){ //END ou inválido
                             printf("\b"); //Apaga espaço extra
                             return;
 

@@ -6,7 +6,6 @@
 
 // TODO: structs, classes, e outras definições.
 int retorna_instrucao(char str[]);
-int retorna_registrador(char str[]);
 
 // Tabela de símbolos + funções construtoras
 typedef struct SymTable {
@@ -22,8 +21,6 @@ int has_symbol(char symbol[], SymTable *head);
 SymTable * add_symbol(char symbol[], SymTable *head);
 
 SymTable * add_address(char symbol[], int addr, SymTable *head);
-
-void print_table(SymTable *head);
 
 // Passos do montador
 SymTable * pass_one(FILE *arq, SymTable *head);

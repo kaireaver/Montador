@@ -1,11 +1,16 @@
-tst: WORD 30
-tst2: WORD 20
-READ R0             ; Lê o inteiro x e armazena no registrador 0
-LOAD R1 const100    ; Carrega o inteiro 100 e armazena no
-                    ; registrador 0
-ADD R0 R1           ; R0 = R0 + R1, i.e. R0 = x + 100
-WRITE R0            ; Imprime o resultado da operação
-HALT                ; Finaliza a execução dod programa
-
-const100: WORD 100
+READ A
+READ B
+LOAD A
+STORE C
+SUB B
+JPG L
+LOAD B
+STORE C
+L: WRITE A
+WRITE B
+WRITE C
+HALT
+A: WORD 0
+B: WORD 0
+C: WORD 0
 END
